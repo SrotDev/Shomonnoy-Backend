@@ -146,6 +146,8 @@ REST_FRAMEWORK = {
 
 
 SIMPLE_JWT = {
+    "USER_ID_FIELD": "uuid",
+    "USER_ID_CLAIM": "user_id",
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=60),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
     "ROTATE_REFRESH_TOKENS": False,
