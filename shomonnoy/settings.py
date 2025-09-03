@@ -26,7 +26,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 SECRET_KEY = 'django-insecure-@q$px2$spz%z7#-pg(bwl=z(1$siwym5#7pf0#*&scdl)t3y_y'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
 
@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'base',
     'rest_framework',
     "rest_framework_simplejwt",
+    'django.contrib.gis',
 ]
 
 REST_FRAMEWORK = {
@@ -87,7 +88,7 @@ WSGI_APPLICATION = 'shomonnoy.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
+        'ENGINE': 'django.contrib.gis.db.backends.postgis',
         'NAME': config('DB_NAME'),
         'USER': config('DB_USER'),
         'PASSWORD': config('DB_PASSWORD'),
@@ -155,3 +156,13 @@ SIMPLE_JWT = {
     "BLACKLIST_AFTER_ROTATION": True,
     "AUTH_HEADER_TYPES": ("Bearer",),
 }
+
+GDAL_LIBRARY_PATH = os.path.join(
+    os.environ.get("CONDA_PREFIX", ""),
+    "Library", "bin", "gdal.dll"
+)
+
+AUTH_USER_MODEL = 'base.User'
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
