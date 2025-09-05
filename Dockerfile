@@ -26,5 +26,5 @@ COPY . .
 # Expose port
 EXPOSE 8000
 
-# Start server
-CMD ["gunicorn", "shomonnoy.wsgi:application", "--bind", "0.0.0.0:8000"]
+# Start server with automatic migrations
+CMD ["sh", "-c", "python manage.py migrate && gunicorn shomonnoy.wsgi:application --bind 0.0.0.0:8000"]
