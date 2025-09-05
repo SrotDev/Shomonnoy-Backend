@@ -18,9 +18,7 @@ services:
           name: dpg-d2tcidogjchc739o07og-a
           property: host
       - key: DB_PORT
-        fromDatabase:
-          name: shomonnoy-db
-          property: port
+        value: 5432
       - key: DB_ENGINE
         value: django.contrib.gis.db.backends.postgis
       - key: ALLOWED_HOSTS
