@@ -8,14 +8,14 @@ services:
       - key: DJANGO_SECRET_KEY
         generateValue: true
       - key: DB_NAME
-        value: shomonnoydb
+        value: shomonnoy_db
       - key: DB_USER
-        value: superadmin
+        value: shomonnoy_db_user
       - key: DB_PASSWORD
-        generateValue: true
+        value: cOsCfGGdBSYQ4kN51LxPmDp96ztpsFOm
       - key: DB_HOST
         fromDatabase:
-          name: shomonnoy-db
+          name: dpg-d2tcidogjchc739o07og-a
           property: host
       - key: DB_PORT
         fromDatabase:
@@ -24,7 +24,7 @@ services:
       - key: DB_ENGINE
         value: django.contrib.gis.db.backends.postgis
       - key: ALLOWED_HOSTS
-        value: .onrender.com,localhost,127.0.0.1
+        value: '*'
       - key: DEBUG
         value: 'False'
 databases:
