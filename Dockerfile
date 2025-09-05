@@ -2,9 +2,9 @@
 # Use the official Python image with system dependencies for GDAL/PostGIS
 FROM python:3.11-slim
 
-# Install system dependencies for GDAL, PostGIS, and PostgreSQL client
+# Install system dependencies for GDAL, PostGIS, PostgreSQL client, and build tools
 RUN apt-get update && \
-    apt-get install -y binutils libproj-dev gdal-bin postgis postgresql-client && \
+    apt-get install -y binutils libproj-dev gdal-bin postgis postgresql-client build-essential libpq-dev && \
     rm -rf /var/lib/apt/lists/*
 
 # Set work directory
