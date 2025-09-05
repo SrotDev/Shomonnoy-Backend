@@ -29,7 +29,7 @@ SECRET_KEY = 'django-insecure-@q$px2$spz%z7#-pg(bwl=z(1$siwym5#7pf0#*&scdl)t3y_y
 DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
-
+CORS_ALLOW_ALL_ORIGINS = True
 
 # Application definition
 
@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'rest_framework',
     "rest_framework_simplejwt",
     'django.contrib.gis',
+    'corsheaders',
 ]
 
 REST_FRAMEWORK = {
@@ -61,6 +62,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     "whitenoise.middleware.WhiteNoiseMiddleware",
+    'corsheaders.middleware.CorsMiddleware',
 ]
 
 ROOT_URLCONF = 'shomonnoy.urls'

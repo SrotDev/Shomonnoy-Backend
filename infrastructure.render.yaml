@@ -1,0 +1,34 @@
+services:
+	- type: web
+		name: shomonnoy-backend
+		env: docker
+		plan: free
+		autoDeploy: true
+		envVars:
+			- key: DJANGO_SECRET_KEY
+				generateValue: true
+			- key: DB_NAME
+				value: shomonnoydb
+			- key: DB_USER
+				value: superadmin
+			- key: DB_PASSWORD
+				generateValue: true
+			- key: DB_HOST
+				fromDatabase:
+					name: shomonnoy-db
+					property: host
+			- key: DB_PORT
+				fromDatabase:
+					name: shomonnoy-db
+					property: port
+			- key: DB_ENGINE
+				value: django.contrib.gis.db.backends.postgis
+			- key: ALLOWED_HOSTS
+				value: .onrender.com,localhost,127.0.0.1
+			- key: DEBUG
+				value: 'False'
+databases:
+	- name: shomonnoy-db
+		plan: free
+		postgresMajorVersion: 15
+		ipAllowList: []

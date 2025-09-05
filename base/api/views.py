@@ -15,15 +15,14 @@ from base.api.serializers import (
 )
 from base.models import User, Location, Work, Notice, Notification, Feedback, Report
 from rest_framework.decorators import api_view, permission_classes
-from django.contrib.gis.db.models.functions import Intersection
-from django.contrib.gis.geos import GEOSGeometry
-from rest_framework import status
+from rest_framework import status, filters
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from base.api.serializers import UserSerializer
 
 
 
-
-# User CRUD viewset
-from rest_framework import filters
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
@@ -31,6 +30,8 @@ class UserViewSet(viewsets.ModelViewSet):
     filter_backends = [filters.SearchFilter]
     search_fields = ["role"]
     permission_classes = [IsAuthenticated]
+
+
 
 # Registration view (for POST only)
 class UserRegisterView(generics.CreateAPIView):
@@ -104,3 +105,11 @@ class ReportViewSet(viewsets.ModelViewSet):
     queryset = Report.objects.all()
     serializer_class = ReportSerializer
     permission_classes = [IsAuthenticated]
+
+class ProfileView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+        serializer = UserSerializer(user)
+        return Response(serializer.data)

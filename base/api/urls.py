@@ -352,5 +352,6 @@ urlpatterns = [
     path("auth/register/", views.UserRegisterView.as_view()),
     path("auth/login/", views.LoginView.as_view()),
     path("conflicts/", views.conflict_detection_view, name="conflict-detection"),
+    path("profile/", views.ProfileView.as_view(), name="profile"),
     path("", include(router.urls)),
 ]
