@@ -9,8 +9,8 @@ __pycache__/
 *.py[cod]
 
 # Django migrations
-*/migrations/*
-!*/migrations/__init__.py
+# */migrations/*
+# !*/migrations/__init__.py
 
 # Other common ignores
 *.sqlite3

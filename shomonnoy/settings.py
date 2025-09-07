@@ -159,6 +159,11 @@ SIMPLE_JWT = {
     "AUTH_HEADER_TYPES": ("Bearer",),
 }
 
+# GDAL_LIBRARY_PATH = os.path.join(
+#     os.environ.get("CONDA_PREFIX", ""),
+#     "Library", "bin", "gdal.dll"
+# )
+
 AUTH_USER_MODEL = 'base.User'
 
 MEDIA_URL = '/media/'
