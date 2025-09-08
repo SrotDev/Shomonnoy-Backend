@@ -72,7 +72,7 @@ class WorkSerializer(serializers.ModelSerializer):
         request = self.context.get('request')
         if request and hasattr(request, 'user') and request.user.is_authenticated:
             if getattr(request.user, 'role', None) == 'stakeholder':
-                stakeholder_uuid = str(validated_data.get('stakeholder'))
+                stakeholder_uuid = str(validated_data.get('stakeholder').uuid)
                 user_uuid = str(request.user.uuid)
                 if stakeholder_uuid != user_uuid:
                     raise serializers.ValidationError("Stakeholder field must match your user UUID.")
