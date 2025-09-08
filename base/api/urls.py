@@ -3,6 +3,7 @@ from base.api import views
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.routers import DefaultRouter
+from rest_framework_simplejwt.views import TokenRefreshView
 
 @api_view(["GET"])
 def api_root(request):
@@ -353,5 +354,6 @@ urlpatterns = [
     path("auth/login/", views.LoginView.as_view()),
     path("conflicts/", views.conflict_detection_view, name="conflict-detection"),
     path("profile/", views.ProfileView.as_view(), name="profile"),
+    path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path("", include(router.urls)),
 ]
