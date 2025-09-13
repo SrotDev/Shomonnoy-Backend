@@ -20,6 +20,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from base.api.serializers import UserSerializer
+from django.db.models import Prefetch
 
 
 
@@ -60,7 +61,10 @@ class WorkViewSet(viewsets.ModelViewSet):
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])
 def conflict_detection_view(request):
-    works = Work.objects.prefetch_related('conflicts').filter().exclude(status__iexact='Declined')
+    works = Work.objects.prefetch_related(
+        Prefetch('conflicts', queryset=Work.objects.exclude(status__iexact='Declined'))
+    ).filter(status__iexact='ProposedByStakeholder')
+    
     visited = set()
     conflict_groups = []
 
@@ -71,14 +75,15 @@ def conflict_detection_view(request):
         stack = [work]
         while stack:
             current = stack.pop()
-            for conflicted in current.conflicts.exclude(status__iexact='Declined').all():
+            for conflicted in current.conflicts.all():
                 if conflicted.pk not in visited and conflicted not in group:
                     group.add(conflicted)
                     stack.append(conflicted)
         if len(group) > 1:
             for w in group:
                 visited.add(w.pk)
-            conflict_groups.append([WorkSerializer(w).data for w in group])
+            # conflict_groups.append([WorkSerializer(w).data for w in group])
+            conflict_groups.append(WorkSerializer(group, many=True).data)
 
     return Response(conflict_groups, status=status.HTTP_200_OK)
 

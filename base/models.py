@@ -102,7 +102,8 @@ class Work(models.Model):
     budget = models.DecimalField(max_digits=12, decimal_places=2)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    conflicts = models.ManyToManyField('self', null=True, blank=True, default=None)  # Self-referential ManyToManyField to indicate conflicts
+    # conflicts = models.ManyToManyField('self', null=True, blank=True, default=None)  # Self-referential ManyToManyField to indicate conflicts
+    conflicts = models.ManyToManyField('self', blank=True, symmetrical=True)
 
     def __str__(self):
         return f"Work: {self.name} at {self.location.name if self.location else 'N/A'}"
