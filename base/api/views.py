@@ -79,6 +79,7 @@ def conflict_detection_view(request):
             for w in group:
                 visited.add(w.pk)
             conflict_groups.append([WorkSerializer(w).data for w in group])
+            
     return Response(conflict_groups, status=status.HTTP_200_OK)
 
 
