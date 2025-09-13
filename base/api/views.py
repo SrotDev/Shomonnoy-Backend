@@ -60,7 +60,7 @@ class WorkViewSet(viewsets.ModelViewSet):
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])
 def conflict_detection_view(request):
-    works = Work.objects.prefetch_related('conflicts').exclude(status='declined')
+    works = Work.objects.prefetch_related('conflicts').filter().exclude(status__iexact='Declined')
     visited = set()
     conflict_groups = []
 
@@ -71,7 +71,7 @@ def conflict_detection_view(request):
         stack = [work]
         while stack:
             current = stack.pop()
-            for conflicted in current.conflicts.all():
+            for conflicted in current.conflicts.exclude(status__iexact='Declined').all():
                 if conflicted.pk not in visited and conflicted not in group:
                     group.add(conflicted)
                     stack.append(conflicted)
@@ -79,7 +79,7 @@ def conflict_detection_view(request):
             for w in group:
                 visited.add(w.pk)
             conflict_groups.append([WorkSerializer(w).data for w in group])
-            
+
     return Response(conflict_groups, status=status.HTTP_200_OK)
 
 
