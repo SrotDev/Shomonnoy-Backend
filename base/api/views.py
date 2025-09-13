@@ -62,8 +62,8 @@ class WorkViewSet(viewsets.ModelViewSet):
 @permission_classes([IsAuthenticated])
 def conflict_detection_view(request):
     works = Work.objects.prefetch_related(
-        Prefetch('conflicts', queryset=Work.objects.exclude(status__iexact='Declined'))
-    ).filter(status__iexact='ProposedByStakeholder')
+        Prefetch('conflicts', queryset=Work.objects.exclude(status__in=['Declined', 'Done']))
+    ).filter(status__in='ProposedByStakeholder')
     
     visited = set()
     conflict_groups = []
