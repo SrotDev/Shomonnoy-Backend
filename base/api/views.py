@@ -60,7 +60,7 @@ class WorkViewSet(viewsets.ModelViewSet):
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])
 def conflict_detection_view(request):
-    works = Work.objects.prefetch_related('conflicts').all()
+    works = Work.objects.prefetch_related('conflicts').exclude(status='declined')
     visited = set()
     conflict_groups = []
 
