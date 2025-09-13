@@ -63,7 +63,7 @@ class WorkViewSet(viewsets.ModelViewSet):
 def conflict_detection_view(request):
     works = Work.objects.prefetch_related(
         Prefetch('conflicts', queryset=Work.objects.exclude(status__in=['Declined', 'Done']))
-    ).filter(status__in='ProposedByStakeholder')
+    ).filter(status__iexact='ProposedByStakeholder')
     
     visited = set()
     conflict_groups = []
