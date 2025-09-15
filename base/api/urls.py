@@ -354,6 +354,7 @@ urlpatterns = [
     path("auth/login/", views.LoginView.as_view()),
     path("conflicts/", views.conflict_detection_view, name="conflict-detection"),
     path("profile/", views.ProfileView.as_view(), name="profile"),
+    path("shortrouting/", views.ShortRoutesAPIView.as_view(), name="shortrouting"),
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path("", include(router.urls)),
 ]

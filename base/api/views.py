@@ -19,10 +19,19 @@ from rest_framework import status, filters
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.exceptions import APIException
 from base.api.serializers import UserSerializer
 from django.db.models import Prefetch
 
 
+
+from typing import List, Tuple
+
+from django.contrib.gis.geos import GEOSGeometry
+from django.db.models import Q
+
+
+from .shortest_path_utils import routeProbSolver
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
@@ -119,3 +128,97 @@ class ProfileView(APIView):
         user = request.user
         serializer = UserSerializer(user)
         return Response(serializer.data)
+
+
+
+class ShortRoutesAPIView(APIView):
+    """
+    POST /api/work-rects/
+    Body JSON:
+      {
+        "statuses": ["Ongoing", "Planned"] or "Ongoing,Planned",
+        "city": "Dhaka",
+        "distinct": true,
+        "orig_str": "23.7767759,90.3996056",
+        "dest_str": "23.8104016,90.4125185"
+      }
+
+    Returns JSON:
+      {
+        "route": {...}   # GeoJSON geometry + summary
+      }
+    """
+    def post(self, request):
+        # Base queryset: works with location
+        qs = Work.objects.select_related("location").filter(location__isnull=False)
+
+        # --- Optional filters ---
+        statuses = request.data.get("statuses")
+        if statuses:
+            if isinstance(statuses, str):
+                status_list = [s.strip() for s in statuses.split(",") if s.strip()]
+            elif isinstance(statuses, list):
+                status_list = [str(s).strip() for s in statuses if s]
+            else:
+                status_list = ["Ongoing", "Planned"]
+            if status_list:
+                qs = qs.filter(status__in=status_list)
+
+        city = request.data.get("city")
+        if city:
+            qs = qs.filter(location__city__iexact=city)
+
+        dedup = request.data.get("distinct", True)
+        if isinstance(dedup, str):
+            dedup = dedup.lower() not in ("0", "false", "no")
+
+        rect_specs: List[List[float]] = []
+        seen: set = set()
+
+        for work in qs:
+            loc = getattr(work, "location", None)
+            if not loc:
+                continue
+            geom = getattr(loc, "geom", None)
+            if geom is None:
+                continue
+
+            # Convert to 4326 safely
+            try:
+                geom_4326 = geom if geom.srid == 4326 else geom.clone().transform(4326)
+            except Exception:
+                geom_4326 = geom
+
+            try:
+                xmin, ymin, xmax, ymax = geom_4326.extent
+            except Exception:
+                continue
+
+            rect = [round(float(xmin), 8), round(float(ymin), 8),
+                    round(float(xmax), 8), round(float(ymax), 8)]
+            tup = tuple(rect)
+
+            if dedup and tup in seen:
+                continue
+            seen.add(tup)
+
+            rect_specs.append(rect)
+
+        # --- Validate start/end ---
+        orig_str = request.data.get("orig_str")
+        dest_str = request.data.get("dest_str")
+        if not orig_str or not dest_str:
+            return Response(
+                {"error": "orig_str and dest_str are required, format 'lat,lon'"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        try:
+            resdata = routeProbSolver(rect_specs=rect_specs, orig_str=orig_str, dest_str=dest_str)
+        except Exception as e:
+            raise APIException(f"Routing failed: {e}")
+
+        return Response(
+            {"route": resdata},
+            status=status.HTTP_200_OK
+        )
